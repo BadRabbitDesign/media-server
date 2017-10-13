@@ -1,0 +1,24 @@
+<html>
+    <head>
+        {% block head %}
+        <title>{% block title %} {% endblock %} APP </title>
+        {% endblock %}
+
+        <link rel=stylesheet type=text/css   href="{{ url_for('static', filename='style.css') }}">
+        <script type=text/javascript src="{{url_for('static', filename='jquery-3.2.1.min.js') }}"></script>
+        <script type=text/javascript>
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        </script>
+    </head>
+    <body>
+        {% block script %}
+            
+        {% endblock %}
+
+        <img src="{{url_for('static', filename='bad_rabbit_small.png')}}" />
+
+        {% block body %}
+            
+        {% endblock %}
+    </body>
+</html>

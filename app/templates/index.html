@@ -1,0 +1,234 @@
+{% extends "base.html" %} {% block title %}My Music{% endblock %} {% block script %}
+<script type=text/javascript>
+    var album = null;
+    var artist = null;
+    var track_list = [];
+    var current_track_idx=0;
+    var volume = 0.2;
+
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+
+    function play_track(ev)
+    {
+        current_track_idx = ev.data.idx;
+        play();
+    }
+
+    function play()
+    {
+
+        track_url = track_list[current_track_idx].url
+        console.log(track_url);
+      
+        var source      = document.createElement('source');
+        source.src      = '/static/'+track_url;
+        source.type     = 'audio/mpeg';
+
+        var sound      = document.createElement('audio');
+        sound.controls = 'controls';
+        sound.autoplay = 'true';
+        sound.volume = volume; 
+        sound.id = 'audio_player'
+        sound.appendChild(source);
+
+        sound.onvolumechange = function() {
+            volume = document.getElementById("audio_player").volume;
+            }; 
+
+        sound.onended = function() {
+            current_track_idx+=1;
+            if (current_track_idx<track_list.length)
+            {
+                play();
+            }
+            }; 
+            
+
+        
+        $(".play").html($(sound));
+    }
+
+
+
+    function get_tracks(ev) {
+        $( ".album_zone" ).hide();
+        $( ".artist_zone" ).hide();
+
+        
+        artist = ev.data.artist;
+        album = ev.data.album;
+        $( ".heading").html("Tracks from \""+album+"\" by \""+artist+"\"");
+        console.log(artist);
+        console.log(album);
+
+        $.ajax({
+            url: '/api/_get_tracks',
+            data: {"artist":artist,"album":album},
+            type: 'GET',
+            success: function(response) {
+                console.log(response);
+                track_list = [];
+                $( ".tracks" ).empty();
+                for (var i = 0, len = response.tracks.length; i < len; i++) {
+                    d = document.createElement('div');
+                    var r=$('<input/>').attr({
+                        type: "button",
+                        id: "field",
+                        class: "button",
+                        value: response.tracks[i].split('.')[0],
+                    });
+
+                    var track_item = new Object();
+                    track_item.url = response.url[i];
+                    track_item.idx = i;
+
+                    track_list.push(track_item)
+
+                    r.on("click",{idx:i} ,play_track)
+                    $(r).appendTo($(d))
+                    $(d).appendTo($(".tracks"))
+                }
+                $( ".track_zone" ).show(500);
+                $( ".track_zone" ).children().show();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+        $( ".track_zone" ).show(500);
+        $( ".track_zone" ).children().show();
+    }
+
+
+    function get_albums(ev) {
+    $( ".track_zone" ).hide();
+    $( ".artist_zone" ).hide();
+    $(".play").html("")
+    
+
+    if (ev !==null)
+    {
+        artist = ev.data.artist;
+    }
+    
+    $( ".heading").html("Albums by \""+artist+"\"");
+    
+    console.log(artist);
+
+    $.ajax({
+            url: '/api/_get_albums',
+            data: {"artist":artist},
+            type: 'GET',
+            success: function(response) {
+                console.log(response);
+                $( ".artists" ).hide("slow");
+
+                $( ".albums" ).empty();
+                for (var i = 0, len = response.length; i < len; i++) {
+                    d = document.createElement('div');
+                    var r=$('<input/>').attr({
+                        type: "button",
+                        id: "field",
+                        class: "button",
+                        value: response[i],
+                        
+                    });
+                    r.on("click",{artist:artist,album:response[i]} ,get_tracks)
+                    $(r).appendTo($(d))
+                    $(d).appendTo($(".albums"))
+                }
+                $( ".album_zone" ).show(500);
+                $( ".album_zone" ).children().show();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function get_artists() {
+    $( ".album_zone" ).hide();
+    $( ".track_zone" ).hide();
+
+    $( ".heading").html("Artists");
+
+    $.ajax({
+            url: '/api/_get_artists',
+            type: 'GET',
+            success: function(response) {
+                console.log(response);
+                $( ".artists" ).empty();
+                for (var i = 0, len = response.length; i < len; i++) {
+                    d = document.createElement('div');
+                    var r=$('<input/>').attr({
+                        type: "button",
+                        id: "field",
+                        class: "button",
+                        value: response[i],
+                        
+                    });
+                    r.on("click",{artist:response[i]} ,get_albums)
+                    $(r).appendTo($(d))
+                    $(d).appendTo($(".artists"))
+                }
+                $( ".artist_zone" ).show(500);
+                $( ".artist_zone" ).children().show();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+
+
+    $(function() {
+        get_artists();
+    });
+
+</script>
+{% endblock %} {% block body %}
+
+<div class="play"></div>
+
+<div class="artist_zone">
+    <div class="artists"></div>
+</div>
+
+<div class="album_zone">
+    <table>
+        <tr>
+            <td>
+                <input type="image" src="{{url_for('static', filename='back.png')}}" onclick="get_artists(null)" />
+            </td>
+            <td>
+                <div class="heading"></div>
+            </td>
+        </tr>
+    </table>
+    <div class="albums"> </div>
+</div>
+
+<div class="track_zone">
+    <table>
+        <tr>
+            <td>
+                <input type="image" src="{{url_for('static', filename='back.png')}}" onclick="get_albums(null)" />
+            </td>
+            <td>
+                <div class="heading"></div>
+            </td>
+        </tr>
+    </table>
+    <div class="tracks"></div>
+</div>
+
+
+
+{% endblock %}
