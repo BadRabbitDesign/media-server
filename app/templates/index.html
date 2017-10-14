@@ -33,10 +33,15 @@
 
         var sound      = document.createElement('audio');
         sound.controls = 'controls';
-        sound.autoplay = 'true';
-        sound.volume = volume; 
+        /*sound.autoplay = 'true';*/
+        sound.volume = volume;
         sound.id = 'audio_player'
         sound.appendChild(source);
+
+	sound.oncanplaythrough = function() { 
+   		document.getElementById("audio_player").play();
+		};
+
 
         sound.onvolumechange = function() {
             volume = document.getElementById("audio_player").volume;

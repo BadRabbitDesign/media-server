@@ -11,8 +11,8 @@ logger = logging.getLogger('root')
 logger.debug('loaded API module')
 
 #music_dir = "/home_wd/caspar/Dropbox/projects/python/ms/app/static/music"
-music_dir = "c:/Users/caspar.lucas.TRACABZ/Dropbox/projects/python/media-server.git/trunk/app/static/music"
-
+#music_dir = "c:/Users/caspar.lucas.TRACABZ/Dropbox/projects/python/media-server.git/trunk/app/static/music"
+music_dir = "/var/www/media-server/app/static/music"
 
 api = Blueprint('api',__name__)
 
