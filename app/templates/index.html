@@ -4,7 +4,7 @@
     var artist = null;
     var track_list = [];
     var current_track_idx=0;
-    var volume = 0.2;
+    var volume = 1.0;
 
     function shuffleArray(array) {
         for (var i = array.length - 1; i > 0; i--) {
@@ -21,27 +21,38 @@
         play();
     }
 
+
     function play()
     {
 
         track_url = track_list[current_track_idx].url
         console.log(track_url);
       
-        var source      = document.createElement('source');
-        source.src      = '/static/'+track_url;
-        source.type     = 'audio/mpeg';
-
-        var sound      = document.createElement('audio');
-        sound.controls = 'controls';
-        /*sound.autoplay = 'true';*/
-        sound.volume = volume;
-        sound.id = 'audio_player'
-        sound.appendChild(source);
-
-	sound.oncanplaythrough = function() { 
-   		document.getElementById("audio_player").play();
-		};
-
+        sound = document.getElementById("audio_player");
+        if (sound==null)
+        {
+            var source      = document.createElement('source');
+            source.src      = '/static/'+track_url;
+            source.type     = 'audio/mpeg';
+            source.id       = 'track_id';
+            sound      = document.createElement('audio');
+            sound.controls = 'controls';
+            sound.autoplay = 'true';
+            sound.volume = volume;
+            sound.id = 'audio_player'
+            sound.preload = 'auto'
+            sound.appendChild(source);
+            $(".play").html($(sound));
+        }
+        else
+        {
+            var source = document.getElementById("track_id");
+            source.src = '/static/'+track_url;
+            source.type = 'audio/mpeg';
+            sound.autoplay = 'true';
+            sound.load();
+            sound.play();
+        }
 
         sound.onvolumechange = function() {
             volume = document.getElementById("audio_player").volume;
@@ -54,10 +65,7 @@
                 play();
             }
             }; 
-            
-
         
-        $(".play").html($(sound));
     }
 
 
