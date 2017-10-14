@@ -6,10 +6,10 @@ logger.debug('main message')
 
 from app import create_app
 
-Application = create_app('development')
+application = create_app('development')
 
 
 
 if __name__ == '__main__':
     logger.debug('starting MS Application')
-    Application.run()
+    application.run(host='0.0.0.0')
