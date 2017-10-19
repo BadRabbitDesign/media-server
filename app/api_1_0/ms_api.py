@@ -10,15 +10,11 @@ import re
 logger = logging.getLogger('root')
 logger.debug('loaded API module')
 
-#music_dir = "/home_wd/caspar/Dropbox/projects/python/ms/app/static/music"
-#music_dir = "c:/Users/caspar.lucas.TRACABZ/Dropbox/projects/python/media-server.git/trunk/app/static/music"
-music_dir = "/var/www/media-server/app/static/music"
+app_path = os.getcwd()
+music_dir = ("%s/app/static/music" % os.getcwd())
+print ("music folder =%s" %(music_dir))
 
 api = Blueprint('api',__name__)
-
-
-
-
 
 def atoi(text):
     return int(text) if text.isdigit() else text
@@ -30,11 +26,6 @@ def natural_keys(text):
     (See Toothy's implementation in the comments)
     '''
     return [ atoi(c) for c in re.split('(\d+)', text) ]
-
-
-
-
-
 
 
 @api.route('/_get_artists')

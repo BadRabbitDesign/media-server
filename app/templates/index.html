@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %}My Music{% endblock %} {% block script %}
+{% extends "base.html" %} {% block title %}Bad Rabbit Music{% endblock %} {% block script %}
 <script type=text/javascript>
     var album = null;
     var artist = null;
@@ -24,51 +24,11 @@
 
     function play()
     {
-
-        track_url = track_list[current_track_idx].url
+        track_url = "{{base_url}}"+"static/"+ track_list[current_track_idx].url
         console.log(track_url);
-      
-        sound = document.getElementById("audio_player");
-        if (sound==null)
-        {
-            var source      = document.createElement('source');
-            source.src      = '/static/'+track_url;
-            source.type     = 'audio/mpeg';
-            source.id       = 'track_id';
-            sound      = document.createElement('audio');
-            sound.controls = 'controls';
-            sound.autoplay = 'true';
-            sound.volume = volume;
-            sound.id = 'audio_player'
-            sound.preload = 'auto'
-            sound.appendChild(source);
-            $(".play").html($(sound));
-        }
-        else
-        {
-            var source = document.getElementById("track_id");
-            source.src = '/static/'+track_url;
-            source.type = 'audio/mpeg';
-            sound.autoplay = 'true';
-            sound.load();
-            sound.play();
-        }
-
-        sound.onvolumechange = function() {
-            volume = document.getElementById("audio_player").volume;
-            }; 
-
-        sound.onended = function() {
-            current_track_idx+=1;
-            if (current_track_idx<track_list.length)
-            {
-                play();
-            }
-            }; 
-        
+        set_track("audio_player",track_url); 
     }
-
-
+    
 
     function get_tracks(ev) {
         $( ".album_zone" ).hide();
@@ -199,16 +159,28 @@
             }
         });
     }
-
+  
 
     $(function() {
+        
+        console.log("SCRIPT_ROOT=" + "{{base_url}}" );
+        create_play_control("audio_player", "{{base_url}}" + "static/");
+        set_onended_callback("audio_player",function() {
+            current_track_idx+=1;
+            if (current_track_idx<track_list.length)
+            {
+                play();
+            }
+            });
+    
+        
         get_artists();
     });
 
 </script>
 {% endblock %} {% block body %}
 
-<div class="play"></div>
+<div class="audio_player"></div>
 
 <div class="artist_zone">
     <div class="artists"></div>
