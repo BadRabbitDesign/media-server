@@ -33,7 +33,7 @@
     function get_tracks(ev) {
         $( ".album_zone" ).hide();
         $( ".artist_zone" ).hide();
-
+        $( ".audio_player" ).show(500);
         
         artist = ev.data.artist;
         album = ev.data.album;
@@ -83,8 +83,8 @@
     function get_albums(ev) {
     $( ".track_zone" ).hide();
     $( ".artist_zone" ).hide();
-    $(".play").html("")
-    
+    $( ".audio_player" ).hide(3000);
+    stop("audio_player"); 
 
     if (ev !==null)
     {
@@ -101,8 +101,6 @@
             type: 'GET',
             success: function(response) {
                 console.log(response);
-                $( ".artists" ).hide("slow");
-
                 $( ".albums" ).empty();
                 for (var i = 0, len = response.length; i < len; i++) {
                     d = document.createElement('div');
@@ -129,6 +127,7 @@
     function get_artists() {
     $( ".album_zone" ).hide();
     $( ".track_zone" ).hide();
+    $( ".audio_player" ).hide();
 
     $( ".heading").html("Artists");
 

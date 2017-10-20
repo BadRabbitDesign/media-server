@@ -57,7 +57,10 @@ function create_play_control(id,static_url) {
     var source_id = "trk_" + id;
     var indicator_id = "ind_" + id;
     var var_data = document.createElement("VAR");
-    var_data.id = "var_data_"+id
+    var_data.id = "var_data_"+id;
+    var_data.play_btn = play_btn;
+    var_data.pause_btn = pause_btn;
+    var_data.enable_update=true;
 
     var id=id;
 
@@ -144,14 +147,9 @@ function create_play_control(id,static_url) {
     tb.appendChild(pr);
     pct.appendChild(tb);
 
-
     var source = document.createElement('source');
-/*  source.src = "https://www.mfiles.co.uk/mp3-downloads/Toccata-and-Fugue-Dm.mp3";
-    source.type = 'audio/mpeg'; */
     source.id = source_id;
- 
     sound = document.createElement('audio');
-    /*sound.controls  = 'controls';*/
     sound.autoplay = true;
     sound.volume = 1.0;
     sound.id = sound_id;
@@ -165,7 +163,7 @@ function create_play_control(id,static_url) {
         document.getElementById("pb_" + id).src = play_btn;
         var_data = document.getElementById("var_data_"+id);
         var_data.wp = false;
-        document.getElementById(indicator_id).value = 0;
+        document.getElementById("ind_"+id).value = 0;
 
         callback = var_data.callback;
         if (callback && typeof(callback) === "function") {
@@ -174,35 +172,37 @@ function create_play_control(id,static_url) {
     };
 
     sound.oncanplay = function () {
-        track_length = document.getElementById(sound_id).duration
-        track_length = Math.round(track_length);
-        sec = track_length % 60;
-        min = Math.floor(track_length / 60);
-        t_str = min + ":" + pad(sec + "", 2) + " "
-        document.getElementById("pt_" + id).innerHTML=t_str;
+        var_data = document.getElementById("var_data_"+id);
+        if(var_data.enable_update == true)
+        {
+            track_length = document.getElementById(sound_id).duration
+            track_length = Math.round(track_length);
+            sec = track_length % 60;
+            min = Math.floor(track_length / 60);
+            t_str = min + ":" + pad(sec + "", 2) + " "
+            document.getElementById("pt_" + id).innerHTML=t_str;
+        }
     }
 
     sound.ontimeupdate = function () {
-        currentTime = document.getElementById(sound_id).currentTime;
-        currentTime = Math.round(currentTime);
-        sec = currentTime % 60;
-        min = Math.floor(currentTime / 60);
-        t_str = min + ":" + pad(sec + "", 2) + " "
-        document.getElementById("ct_" + id).innerHTML=t_str;
-        slider = document.getElementById(indicator_id);
-        slider.value = (currentTime / track_length) * 100;
+        var_data = document.getElementById("var_data_"+id);
+        if(var_data.enable_update == true)
+        {
+            currentTime = document.getElementById(sound_id).currentTime;
+            currentTime = Math.round(currentTime);
+            sec = currentTime % 60;
+            min = Math.floor(currentTime / 60);
+            t_str = min + ":" + pad(sec + "", 2) + " "
+            document.getElementById("ct_" + id).innerHTML=t_str;
+            slider = document.getElementById(indicator_id);
+            slider.value = (currentTime / track_length) * 100;
+        }
     }
     add_indicator_style();
 
     $("." + id).append($(pct));
     $("." + id).append($(var_data));
     $("." + id).append($(sound));
- /*   
-    doc = document.getElementsByClassName(id);
-    doc.appendChild(pct);
-    doc.appendChild(var_data);
-    doc.appendChild(sound);
-*/
 
     if (document.getElementById(sound_id).paused) {
         document.getElementById("pb_" + id).src = pause_btn;
@@ -215,6 +215,8 @@ function set_track(id,track_url)
 {
     var source = document.getElementById("trk_" + id);
     var sound = document.getElementById("s_" + id);
+    var_data = document.getElementById("var_data_"+id);
+    var_data.enable_update = true;
     source.src = track_url;
     source.type = 'audio/mpeg';
     sound.autoplay = 'true';
@@ -226,4 +228,19 @@ function set_onended_callback(id,cb)
 {
     var_data = document.getElementById("var_data_"+id);
     var_data.callback=cb;
+}
+
+function stop(id)
+{
+    try{
+    var_data = document.getElementById("var_data_"+id);
+    var_data.wp = false;
+    var_data.enable_update = false;
+    var sound = document.getElementById("s_" + id);
+    sound.pause();
+    sound.currentTime = 0;
+    document.getElementById("pb_" + id).src = var_data.play_btn;
+    document.getElementById("ct_" + id).innerHTML="0:00";
+    document.getElementById("pt_" + id).innerHTML="0:00";}
+    catch(err){}
 }
