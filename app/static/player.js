@@ -14,13 +14,12 @@ function add_indicator_style() {
         css.type = "text/css";
         css.innerHTML = "\
 #slidecontainer {width: 100%;\
-outline: none;}\
+}\
 \
 .slider {-webkit-appearance: none;\
 appearance: none;\
-width: 300px;\
-height: 75px;\
-outline: none;\
+width: 250px;\
+height: 150px;\
 opacity: 0.5;\
 -webkit-transition: .2s;\
 transition: opacity .2s;\
@@ -32,18 +31,18 @@ outline: none;}\
 .slider::-webkit-slider-thumb {\
 -webkit-appearance: none;\
 appearance: none;\
-width: 25px;\
-height: 25px;\
+width: 30px;\
+height: 50px;\
 background: #4CAF50;\
 cursor: pointer;\
-outline: none;}\
+}\
 \
 .slider::-moz-range-thumb {\
-width: 25px;\
-height: 25px;\
+width: 30px;\
+height: 50px;\
 background: #4CAF50;\
 cursor: pointer;\
-outline: none;}"
+}"
         document.body.appendChild(exists);
         document.body.appendChild(css);
     }
@@ -67,7 +66,7 @@ function create_play_control(id,static_url) {
     var play_button = document.createElement("input");
     play_button.type = "image";
     play_button.src = "play-button.png";
-    play_button.style = "outline: none;";
+    play_button.style = "outline: none;width:150px; height: auto;";
     play_button.id = "pb_" + id;
     play_button.onclick = function () {
         if (document.getElementById(sound_id).paused) {
@@ -126,6 +125,7 @@ function create_play_control(id,static_url) {
     pt.id = "pt_" + id;
     pt.style = "display: inline";
     pt.innerHTML = "0:00";
+    
     wrapper = document.createElement("div");
     wrapper.appendChild(ct);
     wrapper.appendChild(sep);
@@ -146,6 +146,10 @@ function create_play_control(id,static_url) {
     pr.appendChild(c3);
     tb.appendChild(pr);
     pct.appendChild(tb);
+
+    control_wrap = document.createElement("div");
+    control_wrap.style="display: inline-block;border: 2px solid;border-radius: 70px;background: #EEEEEE;";
+    control_wrap.appendChild(pct);
 
     var source = document.createElement('source');
     source.id = source_id;
@@ -200,7 +204,7 @@ function create_play_control(id,static_url) {
     }
     add_indicator_style();
 
-    $("." + id).append($(pct));
+    $("." + id).append($(control_wrap));
     $("." + id).append($(var_data));
     $("." + id).append($(sound));
 

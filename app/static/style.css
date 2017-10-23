@@ -23,6 +23,10 @@ body
   border-radius:10px;
 }
 
+table{
+  width:650px;
+}
+
 .heading{
   display: table-cell;
   font: bold 18px Arial;
